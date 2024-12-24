@@ -5,9 +5,18 @@ import "core:math"
 import "core:math/rand"
 import "vendor:raylib"
 
+SCREEN_WIDTH : i32 : 1024
+SCREEN_HEIGHT : i32 : 800
+
+//MOVABLE
+Movable :: struct{
+	position: raylib.Vector2,
+	direction: f32,
+	advance: raylib.Vector2,
+	color: raylib.Color,
+}
+
 main :: proc() {
-	SCREEN_WIDTH : i32 : 800
-	SCREEN_HEIGHT : i32 : 450
 	
 	using raylib
 
@@ -25,20 +34,27 @@ main :: proc() {
 	camera := Camera2D{ V_HALF_SCREEN, V_HALF_SCREEN, 0.0, 1.0 } //target, offset, rotation, zoom
 
 	//ZOMBIES
-	Zombie :: struct{
-		position: raylib.Vector2,
-		direction: f32,
-		advance: raylib.Vector2,
-	}
-	zombies := make([dynamic]Zombie, 100) 
+	zombies := make([dynamic]Movable, 1000) 
 	defer( delete(zombies) )
-
 	for &z in zombies {
 		z.position = raylib.Vector2{ 
 			rand.float32_uniform(0, f32(SCREEN_WIDTH)), 
 			rand.float32_uniform(0, f32(SCREEN_HEIGHT)) }
-		z.direction = rand.float32_uniform(0.0, 2*PI)	
+		z.direction = rand.float32_uniform(0.0, 2*PI)
+		z.color = RED
 	} 
+
+	//HUMANS
+	humans := make([dynamic]Movable, 1000)
+	defer( delete(humans) )
+	for &h in humans {
+		h.position = raylib.Vector2{ 
+			rand.float32_uniform(0, f32(SCREEN_WIDTH)), 
+			rand.float32_uniform(0, f32(SCREEN_HEIGHT)) }
+		h.direction = rand.float32_uniform(0.0, 2*PI)
+		h.color = BLUE
+	} 
+
 
 	//PLAYER
 	player := Rectangle { V_HALF_SCREEN.x, V_HALF_SCREEN.y, 10, 10 }
@@ -56,21 +72,28 @@ main :: proc() {
 		ClearBackground(RAYWHITE)
 		DrawRectangleRec(player, RED)
 		
-		for &z in zombies {
-			z.advance.x = math.cos(z.direction)
-			z.advance.y = math.sin(z.direction)
-		}
+		update_movables(zombies)
+		update_movables(humans)
+	}
+}
 
-		for z in zombies {
-			dir := z.position + z.advance * 10.0
-			DrawCircleLinesV(z.position, 5, BLACK)
-			DrawLineV(z.position, dir, RED)
-		}
+update_movables :: proc(movables: [dynamic]Movable){
+	using raylib
 
-		for &z in zombies {
-			z.position = z.position + z.advance
-			z.direction += rand.float32_uniform(-PI*0.05, PI*0.05)
-		}
+	for &m in movables {
+		m.advance.x = math.cos(m.direction)
+		m.advance.y = math.sin(m.direction)
+	}
+
+	for m in movables {
+		dir := m.position + m.advance * 10.0
+		DrawCircleV(m.position, 5, m.color)
+		DrawLineV(m.position, dir, GREEN)
+	}
+
+	for &m in movables {
+		m.position = m.position + m.advance
+		m.direction += rand.float32_uniform(-PI*0.05, PI*0.05)
 	}
 }
 
