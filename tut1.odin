@@ -7,15 +7,21 @@ import "vendor:raylib"
 
 SCREEN_WIDTH : i32 : 1024
 SCREEN_HEIGHT : i32 : 800
+SCENE_WIDTH : i32 : 2000
+SCENE_HEIGHT : i32 : 1000
+OBJ_RADIUS : f32 : 5.0
+OBJ_COLLISION_RADIUS : f32 : 7.0
+
 
 //MOVABLE
 Movable :: struct{
 	position: raylib.Vector2,
-	direction: f32,
+	angle: f32,
 	advance: raylib.Vector2,
 	color: raylib.Color,
 }
 
+//MAIN
 main :: proc() {
 	
 	using raylib
@@ -40,7 +46,7 @@ main :: proc() {
 		z.position = raylib.Vector2{ 
 			rand.float32_uniform(0, f32(SCREEN_WIDTH)), 
 			rand.float32_uniform(0, f32(SCREEN_HEIGHT)) }
-		z.direction = rand.float32_uniform(0.0, 2*PI)
+		z.angle = rand.float32_uniform(0.0, 2*PI)
 		z.color = RED
 	} 
 
@@ -51,7 +57,7 @@ main :: proc() {
 		h.position = raylib.Vector2{ 
 			rand.float32_uniform(0, f32(SCREEN_WIDTH)), 
 			rand.float32_uniform(0, f32(SCREEN_HEIGHT)) }
-		h.direction = rand.float32_uniform(0.0, 2*PI)
+		h.angle = rand.float32_uniform(0.0, 2*PI)
 		h.color = BLUE
 	} 
 
@@ -81,19 +87,19 @@ update_movables :: proc(movables: [dynamic]Movable){
 	using raylib
 
 	for &m in movables {
-		m.advance.x = math.cos(m.direction)
-		m.advance.y = math.sin(m.direction)
+		m.advance.x = math.cos(m.angle)
+		m.advance.y = math.sin(m.angle)
 	}
 
 	for m in movables {
 		dir := m.position + m.advance * 10.0
-		DrawCircleV(m.position, 5, m.color)
+		DrawCircleV(m.position, OBJ_RADIUS, m.color)
 		DrawLineV(m.position, dir, GREEN)
 	}
 
 	for &m in movables {
 		m.position = m.position + m.advance
-		m.direction += rand.float32_uniform(-PI*0.05, PI*0.05)
+		m.angle += rand.float32_uniform(-PI*0.05, PI*0.05)
 	}
 }
 
