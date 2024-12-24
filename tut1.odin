@@ -7,8 +7,8 @@ import "vendor:raylib"
 
 SCREEN_WIDTH : i32 : 1024
 SCREEN_HEIGHT : i32 : 800
-SCENE_WIDTH : i32 : 2000
-SCENE_HEIGHT : i32 : 1000
+SCENE_WIDTH : f32 : 2000
+SCENE_HEIGHT : f32 : 1000
 OBJ_RADIUS : f32 : 5.0
 OBJ_COLLISION_RADIUS : f32 : 7.0
 
@@ -61,6 +61,7 @@ main :: proc() {
 		h.color = BLUE
 	} 
 
+	scenemap := Rectangle{0.0, 0.0, SCENE_WIDTH, SCENE_HEIGHT}
 
 	//PLAYER
 	player := Rectangle { V_HALF_SCREEN.x, V_HALF_SCREEN.y, 10, 10 }
@@ -75,9 +76,10 @@ main :: proc() {
 		defer(EndMode2D())
 
 		// DRAWING 
-		ClearBackground(RAYWHITE)
-		DrawRectangleRec(player, RED)
-		
+		ClearBackground(BLACK)
+		DrawRectangleRec(scenemap, RAYWHITE)
+		DrawRectangleRec(player, RED)		
+
 		update_movables(zombies)
 		update_movables(humans)
 	}
