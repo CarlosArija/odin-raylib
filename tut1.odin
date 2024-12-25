@@ -15,10 +15,10 @@ OBJ_COLLISION_RADIUS : f32 : 7.0
 
 //MOVABLE
 Movable :: struct{
-	position: raylib.Vector2,
-	angle: f32,
-	advance: raylib.Vector2,
-	color: raylib.Color,
+	position : raylib.Vector2,
+	angle : f32,
+	advance : raylib.Vector2,
+	color : raylib.Color,
 }
 
 //MAIN
@@ -43,9 +43,7 @@ main :: proc() {
 	zombies := make([dynamic]Movable, 1000) 
 	defer( delete(zombies) )
 	for &z in zombies {
-		z.position = raylib.Vector2{ 
-			rand.float32_uniform(0, f32(SCREEN_WIDTH)), 
-			rand.float32_uniform(0, f32(SCREEN_HEIGHT)) }
+		z.position = random_vector2(0.0, f32(SCREEN_WIDTH), 0.0, f32(SCREEN_HEIGHT))
 		z.angle = rand.float32_uniform(0.0, 2*PI)
 		z.color = RED
 	} 
@@ -54,12 +52,12 @@ main :: proc() {
 	humans := make([dynamic]Movable, 1000)
 	defer( delete(humans) )
 	for &h in humans {
-		h.position = raylib.Vector2{ 
-			rand.float32_uniform(0, f32(SCREEN_WIDTH)), 
-			rand.float32_uniform(0, f32(SCREEN_HEIGHT)) }
+		h.position = random_vector2(0.0, f32(SCREEN_WIDTH), 0.0, f32(SCREEN_HEIGHT))
 		h.angle = rand.float32_uniform(0.0, 2*PI)
 		h.color = BLUE
 	} 
+	
+	
 
 	scenemap := Rectangle{0.0, 0.0, SCENE_WIDTH, SCENE_HEIGHT}
 
@@ -115,3 +113,8 @@ update_states :: proc(player: ^raylib.Rectangle, camera: ^raylib.Camera2D){
 	camera.zoom += f32(raylib.GetMouseWheelMove()) * 0.05
 }
 
+random_vector2 :: proc(minx, maxx, miny, maxy : f32) -> raylib.Vector2 {
+	return raylib.Vector2{
+			rand.float32_uniform(minx, maxx),
+			rand.float32_uniform(miny, maxy)}
+}
